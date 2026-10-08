@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="TempoTube Lite: prepará tus canciones, encontrá tu pulso y practicá con un metrónomo simple.">
+    <title>TempoTube Lite · Tu pulso, tu música</title>
+    <style>
+      :root {
+        --ink: #111;
+        --charcoal: #212121;
+        --emerald: #00a887;
+        --emerald-dark: #007d68;
+        --paper: #fcfcfc;
+        --muted: #68706e;
+        --line: rgba(33, 33, 33, .13);
+        --chroma: #00ff00;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        color: var(--charcoal);
+        background: var(--paper);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      a { color: inherit; }
+      .container { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid var(--line);
+        background: rgba(252, 252, 252, .9);
+        backdrop-filter: blur(16px);
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 72px;
+        gap: 24px;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        font-weight: 850;
+        letter-spacing: -.04em;
+        text-decoration: none;
+      }
+      .brand-mark {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border-radius: 11px;
+        color: white;
+        background: var(--emerald);
+        font-size: 1.15rem;
+      }
+      .nav-links { display: flex; gap: 22px; }
+      .nav-links a { color: var(--muted); font-size: .88rem; text-decoration: none; }
+      .nav-links a:hover { color: var(--emerald-dark); }
+      .hero {
+        display: grid;
+        grid-template-columns: 1.05fr .95fr;
+        align-items: center;
+        gap: 64px;
+        min-height: 680px;
+        padding: 80px 0;
+      }
+      .eyebrow {
+        margin: 0 0 16px;
+        color: var(--emerald-dark);
+        font-size: .78rem;
+        font-weight: 850;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+      }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 {
+        max-width: 650px;
+        margin-bottom: 22px;
+        color: var(--ink);
+        font-size: clamp(2.7rem, 7vw, 5.6rem);
+        letter-spacing: -.075em;
+        line-height: .96;
+      }
+      .hero-copy {
+        max-width: 560px;
+        color: var(--muted);
+        font-size: 1.12rem;
+        line-height: 1.65;
+      }
+      .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+      .button {
+        display: inline-flex;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 18px;
+        border: 1px solid var(--emerald);
+        border-radius: 10px;
+        color: white;
+        background: var(--emerald);
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .button.secondary { color: var(--emerald-dark); background: transparent; }
+      .button:hover { background: var(--emerald-dark); color: white; }
+      .hero-visual { transform: rotate(2deg); }
+      .section { padding: 92px 0; }
+      .section-heading { max-width: 650px; margin-bottom: 42px; }
+      .section-heading h2 { margin-bottom: 12px; color: var(--ink); font-size: clamp(2rem, 5vw, 3.4rem); letter-spacing: -.06em; }
+      .section-heading p { color: var(--muted); line-height: 1.6; }
+      .chroma-placeholder {
+        display: grid;
+        min-height: 330px;
+        place-items: center;
+        padding: 28px;
+        border: 3px dashed rgba(0, 90, 0, .45);
+        border-radius: 22px;
+        color: #063d06;
+        background: var(--chroma);
+        text-align: center;
+        box-shadow: 0 20px 45px rgba(0, 100, 0, .15);
+      }
+      .chroma-placeholder strong { display: block; font-size: 1.25rem; }
+      .chroma-placeholder span { display: block; margin-top: 8px; font-size: .86rem; line-height: 1.45; }
+      .chroma-placeholder--hero { min-height: 430px; }
+      .hero-photo {
+        display: block;
+        width: 100%;
+        max-height: 560px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        object-fit: cover;
+        box-shadow: 0 24px 55px rgba(33, 33, 33, .18);
+      }
+      .placeholder-note {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: .76rem;
+        line-height: 1.45;
+      }
+      .features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .feature {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: white;
+      }
+      .feature-icon { font-size: 1.8rem; }
+      .feature h3 { margin: 18px 0 8px; color: var(--ink); font-size: 1.05rem; }
+      .feature p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.55; }
+      .screenshots {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      .screenshot-card { min-width: 0; }
+      .screenshot-card .chroma-placeholder { min-height: 420px; }
+      .phone-mockup {
+        display: flex;
+        min-height: 420px;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 18px 14px;
+        border: 8px solid #202322;
+        border-radius: 28px;
+        color: var(--charcoal);
+        background: linear-gradient(150deg, #f8fbfa, #e5f5f0);
+        box-shadow: inset 0 0 0 1px #626866, 0 14px 30px rgba(33, 33, 33, .18);
+      }
+      .phone-mockup__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: .65rem;
+        font-weight: 800;
+      }
+      .phone-mockup__brand { color: var(--emerald-dark); font-weight: 850; }
+      .phone-mockup__card {
+        padding: 16px 12px;
+        border: 1px solid rgba(33, 33, 33, .1);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, .78);
+      }
+      .phone-mockup__card h4 { margin: 0 0 12px; color: var(--ink); font-size: 1rem; }
+      .phone-mockup__number { color: var(--emerald); font-size: 3.8rem; font-weight: 850; line-height: .9; }
+      .phone-mockup__muted { color: var(--muted); font-size: .67rem; }
+      .mockup-ticks { display: flex; gap: 5px; margin-top: 16px; }
+      .mockup-ticks i {
+        display: block;
+        height: 46px;
+        flex: 1;
+        border: 1px solid rgba(33, 33, 33, .2);
+        border-radius: 6px;
+        background: linear-gradient(to top, var(--emerald) 70%, transparent 70%);
+      }
+      .mockup-ticks i:nth-child(2) { background: linear-gradient(to top, var(--emerald) 42%, transparent 42%); }
+      .mockup-ticks i:nth-child(3) { background: linear-gradient(to top, #aab3b0 8%, transparent 8%); }
+      .mockup-ticks i:nth-child(4) { background: linear-gradient(to top, var(--emerald) 42%, transparent 42%); }
+      .mockup-button {
+        width: 100%;
+        padding: 10px;
+        border-radius: 9px;
+        color: white;
+        background: var(--emerald);
+        font-size: .72rem;
+        font-weight: 800;
+        text-align: center;
+      }
+      .mockup-cover {
+        height: 112px;
+        border-radius: 12px;
+        background: linear-gradient(140deg, #111 10%, var(--emerald) 90%);
+      }
+      .mockup-wave {
+        height: 28px;
+        margin-top: 10px;
+        border-radius: 7px;
+        opacity: .8;
+        background: repeating-linear-gradient(90deg, transparent 0 5px, var(--emerald) 6px 8px, transparent 9px 13px);
+      }
+      .mockup-list-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .mockup-list-row:last-child { border-bottom: 0; }
+      .mockup-list-row__icon {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 9px;
+        background: rgba(0, 168, 135, .15);
+      }
+      .mockup-list-row strong { display: block; color: var(--ink); font-size: .72rem; }
+      .mockup-list-row small { color: var(--muted); font-size: .6rem; }
+      .screenshot-card h3 { margin: 16px 0 6px; color: var(--ink); }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        counter-reset: step;
+      }
+      .step { position: relative; padding: 22px; border-top: 3px solid var(--emerald); }
+      .step::before {
+        display: block;
+        margin-bottom: 20px;
+        color: var(--emerald-dark);
+        content: counter(step, decimal-leading-zero);
+        counter-increment: step;
+        font-size: .78rem;
+        font-weight: 850;
+      }
+      .step h3 { margin-bottom: 8px; color: var(--ink); }
+      .step p { color: var(--muted); font-size: .88rem; line-height: 1.5; }
+      .cta {
+        margin: 30px 0 92px;
+        padding: 58px;
+        border-radius: 24px;
+        color: white;
+        background: var(--charcoal);
+      }
+      .cta h2 { max-width: 620px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -.06em; }
+      .cta p { max-width: 580px; color: #c8d0cd; line-height: 1.55; }
+      .cta .button { color: var(--ink); background: white; border-color: white; }
+      footer { padding: 26px 0 42px; border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
+      @media (max-width: 800px) {
+        .hero { grid-template-columns: 1fr; gap: 36px; min-height: auto; padding: 58px 0; }
+        .features, .screenshots { grid-template-columns: 1fr; }
+        .steps { grid-template-columns: repeat(2, 1fr); }
+        .hero-visual { transform: none; }
+      }
+      @media (max-width: 520px) {
+        .container { width: min(100% - 28px, 1120px); }
+        .nav-links { display: none; }
+        .section { padding: 64px 0; }
+        .cta { margin-bottom: 64px; padding: 32px 24px; }
+        .steps { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav">
+        <a class="brand" href="#inicio"><span class="brand-mark">♩</span>TempoTube Lite</a>
+        <nav class="nav-links" aria-label="Navegación de la presentación">
+          <a href="#funciones">Funciones</a>
+          <a href="#capturas">Capturas</a>
+          <a href="#como-funciona">Cómo funciona</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="container hero" id="inicio">
+        <div>
+          <p class="eyebrow">Tu pulso, tu música</p>
+          <h1>Practicá tus canciones con más ritmo.</h1>
+          <p class="hero-copy">TempoTube Lite combina tus canciones favoritas con un metrónomo simple, configurable y pensado para acompañarte durante el ensayo.</p>
+          <div class="actions">
+            <a class="button" href="#funciones">Conocé la aplicación</a>
+            <a class="button secondary" href="#capturas">Ver la experiencia</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <img class="hero-photo" src="assets/hero-ensayo-tempo-tube.jpg" alt="TempoTube Lite en un celular durante un ensayo musical">
+          <p class="placeholder-note">Tu música. Tu tempo. Tu práctica.</p>
+        </div>
+      </section>
+
+      <section class="section" id="funciones">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Funciones principales</p>
+            <h2>Todo lo que necesitás para encontrar tu pulso.</h2>
+            <p>Una experiencia directa, clara y preparada para acompañar tus sesiones de práctica.</p>
+          </div>
+          <div class="features">
+            <article class="feature"><span class="feature-icon">🎵</span><h3>Canciones de YouTube</h3><p>Cargá un link y mantené la canción activa mientras configurás tu metrónomo.</p></article>
+            <article class="feature"><span class="feature-icon">🥁</span><h3>Metrónomo configurable</h3><p>Ajustá BPM, compás, sonidos y ticks graves, agudos o silenciosos.</p></article>
+            <article class="feature"><span class="feature-icon">☁️</span><h3>Listas y backups</h3><p>Guardá tus canciones en listas y realizá copias locales o en Google Drive.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="capturas">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">La experiencia</p>
+            <h2>Una interfaz hecha para tocar.</h2>
+            <p>La interfaz de TempoTube Lite está diseñada para ser fácil de usar y entender, Cargás tu cancion, ajustas el tempo, y empezás a tocar.</p>
+          </div>
+          <div class="screenshots">
+            <article class="screenshot-card">
+              <div class="phone-mockup" aria-label="Recreación visual de la pantalla Metrónomo">
+                <div class="phone-mockup__top"><span class="phone-mockup__brand">TempoTube Lite</span><span>☾</span></div>
+                <div class="phone-mockup__card"><h4>Marcá el pulso</h4><div class="phone-mockup__number">120</div><span class="phone-mockup__muted">BPM</span><div class="mockup-ticks"><i></i><i></i><i></i><i></i></div></div>
+                <div><div class="phone-mockup__muted">Tempo</div><div class="mockup-button">▶ Iniciar</div></div>
+              </div>
+              <h3>Marcá el tempo</h3>
+            </article>
+            <article class="screenshot-card">
+              <div class="phone-mockup" aria-label="Recreación visual de la pantalla Play">
+                <div class="phone-mockup__top"><span class="phone-mockup__brand">Play</span><span>120 BPM</span></div>
+                <div class="phone-mockup__card"><div class="mockup-cover"></div><div class="mockup-wave"></div><h4 style="margin-top:12px">Canción activa</h4><span class="phone-mockup__muted">Artista o canal de YouTube</span></div>
+                <div class="mockup-button">▶ Reproducir</div>
+              </div>
+              <h3>Reproducí y practicá</h3>
+            </article>
+            <article class="screenshot-card">
+              <div class="phone-mockup" aria-label="Recreación visual de la pantalla Listas">
+                <div class="phone-mockup__top"><span class="phone-mockup__brand">Tus listas</span><span>+</span></div>
+                <div class="phone-mockup__card"><div class="mockup-list-row"><span class="mockup-list-row__icon">🎸</span><span><strong>Ensayo acústico</strong><small>Rock · 8 canciones</small></span></div><div class="mockup-list-row"><span class="mockup-list-row__icon">🥁</span><span><strong>Práctica de banda</strong><small>General · 12 canciones</small></span></div><div class="mockup-list-row"><span class="mockup-list-row__icon">🎤</span><span><strong>Repertorio</strong><small>Pop · 5 canciones</small></span></div></div>
+                <div class="mockup-button">＋ Nueva lista</div>
+              </div>
+              <h3>Organizá tu repertorio</h3>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="como-funciona">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">En pocos pasos</p>
+            <h2>Empezá a practicar sin complicaciones.</h2>
+          </div>
+          <div class="steps">
+            <article class="step"><h3>Cargá</h3><p>Pegá el link de una canción de YouTube desde Inicio.</p></article>
+            <article class="step"><h3>Marcá</h3><p>Usá Tap tempo para encontrar una velocidad aproximada.</p></article>
+            <article class="step"><h3>Ajustá</h3><p>Configurá compás, sonido y patrón del metrónomo.</p></article>
+            <article class="step"><h3>Guardá</h3><p>Conservá la configuración en una lista para volver a usarla.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="container cta">
+        <h2>Tu música. Tu tempo. Tu práctica.</h2>
+        <p>TempoTube Lite está pensado para hacer que cada sesión de ensayo sea más clara y más musical.</p>
+        <a class="button" href="#inicio">Volver al inicio</a>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">TempoTube Lite · Presentación del proyecto · 2026</div>
+    </footer>
+  </body>
+</html>
